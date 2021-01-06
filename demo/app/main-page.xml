@@ -24,11 +24,11 @@ https://docs.nativescript.org/ui/components.
     class names available for styling your app at https://docs.nativescript.org/ui/theme.
     -->
     <GridLayout rows="auto,auto,auto,auto,*,auto">
-        <Button row="0" text="Portrait" tap="portrait"/>
-        <Button row="1" text="Landscape" tap="landscape"/>
-        <Button row="2" id="lock" text="Lock" tap="lock"/>
-        <Button row="3" id="nav" text="nav" tap="nav"/>
-        <Label row="5"  text="(c) 2015-2019, Master Technology" class="copyright" android:tap="openMT"/>
+        <Button row="0" text="Portrait" tap="{{ portrait }}"/>
+        <Button row="1" text="Landscape" tap="{{ landscape }}"/>
+        <Button row="2" id="lock" text="Lock" tap="{{ lock }}"/>
+        <Button row="3" id="nav" text="nav" tap="{{ nav }}"/>
+        <Label row="5"  text="(c) 2015-2019, Master Technology" class="copyright" android:tap="{{ openMT }}"/>
 
     </GridLayout>
 </Page>

@@ -1,45 +1,6 @@
-var orientation = require('nativescript-orientation');
+import { MainViewModel } from "./main-view-model"
 
-
-var page, lockElem;
-exports.pageLoaded = function(args) {
-    page = args.object;
-    lockElem = page.getViewById('lock');
-};
-
-exports.portrait = function() {
-    orientation.setOrientation("portrait");
-    lock = true;
-    lockElem.text = "Unlock";
-};
-
-exports.landscape = function() {
-    orientation.setOrientation("landscape");
-    lock = true;
-    lockElem.text = "Unlock";
-
-};
-
-
-var lock = false;
-exports.lock = function() {
-    lock = !lock;
-    if (lock) {
-        orientation.disableRotation();
-        lockElem.text = "Unlock";
-    } else {
-        orientation.enableRotation();
-        lockElem.text = "Lock";
-    }
-};
-
-
-
-exports.orientation = function(args) {
-    console.log("Orientation was changed, is Landscape?", args.landscape);
-};
-
-exports.nav = function() {
-    var frame = require('tns-core-modules/ui/frame');
-    frame.topmost().navigate({ moduleName: "main-page", clearHistory: true });
+export function pageLoaded(args) {
+    var page = args.object;
+    page.bindingContext = new MainViewModel(page, "main-page")
 };
