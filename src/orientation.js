@@ -11,13 +11,7 @@
 
 /* jshint camelcase: false */
 /* global UIDevice, UIDeviceOrientation, UIView, getElementsByTagName, android */
-
-var application = require('tns-core-modules/application');
-var view = require('tns-core-modules/ui/core/view');
-var viewBase = require('tns-core-modules/ui/core/view-base');
-var enums = require('tns-core-modules/ui/enums');
-var frame = require('tns-core-modules/ui/frame');
-var Page = require('tns-core-modules/ui/page').Page;
+import { Application, Enums, Frame, Page, eachDescendant } from "@nativescript/core"
 
 // Load the helper plugins
 require('nativescript-globalevents');
@@ -26,8 +20,6 @@ require('nativescript-dom');
 var allowRotation = true, forceRotation = false, fullScreen = false, abHidden=false;
 var orientation = { };
 var orientationAppliers = [];
-
-module.exports = orientation;
 
 /**
  * Function to add a new orientation applier callback
@@ -65,9 +57,9 @@ if (global.android) {
 
         switch (currentOrientation) {
             case 2: /* LANDSCAPE */
-                return enums.DeviceOrientation.landscape;
+                return Enums.DeviceOrientation.landscape;
             case 1: /* PORTRAIT */
-                return enums.DeviceOrientation.portrait;
+                return Enums.DeviceOrientation.portrait;
             default:
                 break;
         }
@@ -77,39 +69,39 @@ if (global.android) {
         var metrics = new android.util.DisplayMetrics();
         context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
         if (metrics.widthPixels > metrics.heightPixels) {
-            return enums.DeviceOrientation.landscape;
+            return Enums.DeviceOrientation.landscape;
         }
-        return enums.DeviceOrientation.portrait;
+        return Enums.DeviceOrientation.portrait;
 
     };
 
 	orientation.enableRotation = function() {
-		if (!application.android || !application.android.foregroundActivity) {
+		if (!Application.android || !Application.android.foregroundActivity) {
 			setTimeout(orientation.enableRotation, 100);
 			return;
 		}
 
-		var activity = application.android.foregroundActivity;
+		var activity = Application.android.foregroundActivity;
 		activity.setRequestedOrientation(13);  // SCREEN_ORIENTATION_FULL_USER = 13
 	};
 
 	orientation.disableRotation = function() {
-		if (!application.android || !application.android.foregroundActivity) {
+		if (!Application.android || !Application.android.foregroundActivity) {
 			setTimeout(orientation.disableRotation, 100);
 			return;
 		}
 
-		var activity = application.android.foregroundActivity;
+		var activity = Application.android.foregroundActivity;
         activity.setRequestedOrientation(14); // SCREEN_ORIENTATION_LOCKED = 14
 	};
 
 	orientation.setOrientation = function(value, animation) {
-		if (!application.android || !application.android.foregroundActivity) {
+		if (!Application.android || !Application.android.foregroundActivity) {
 			setTimeout(function() { orientation.setOrientation(value, animation); }, 100);
 			return;
 		}
 
-		var activity = application.android.foregroundActivity;
+		var activity = Application.android.foregroundActivity;
 
 		var val = value.toLowerCase();
 		var newOrientation;
@@ -133,8 +125,8 @@ if (global.android) {
 		}
 		activity.setRequestedOrientation(newOrientation);
 
-		// Animation: https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#ROTATION_ANIMATION_JUMPCUT
-		// and https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#rotationAnimation
+		// Animation: https://developer.android.com/reference/android/View/WindowManager.LayoutParams.html#ROTATION_ANIMATION_JUMPCUT
+		// and https://developer.android.com/reference/android/View/WindowManager.LayoutParams.html#rotationAnimation
 
 	};
 
@@ -142,7 +134,7 @@ if (global.android) {
 
             var View = android.view.View;
             var WindowManager = android.view.WindowManager;
-            var window = application.android.startActivity.getWindow();
+            var window = Application.android.startActivity.getWindow();
 
             fullScreen = !!value;
 
@@ -160,13 +152,13 @@ if (global.android) {
             }
 /*
             if (fullScreen) {
-                if (!frame.topmost().currentPage.actionBarHidden && !abHidden) {
+                if (!Frame.topmost().currentPage.actionBarHidden && !abHidden) {
                     abHidden = true;
-                    frame.topmost().currentPage.actionBarHidden = true;
+                    Frame.topmost().currentPage.actionBarHidden = true;
                 }
             } else if (abHidden) {
                 abHidden = false;
-                frame.topmost().currentPage.actionBarHidden = false;
+                Frame.topmost().currentPage.actionBarHidden = false;
             }
 */
     };
@@ -180,15 +172,15 @@ if (global.android) {
 		switch (device.orientation) {
 			case UIDeviceOrientation.UIDeviceOrientationLandscapeRight:
 			case UIDeviceOrientation.UIDeviceOrientationLandscapeLeft:
-				return enums.DeviceOrientation.landscape;
+				return Enums.DeviceOrientation.landscape;
 			case UIDeviceOrientation.UIDeviceOrientationPortraitUpsideDown:
 			case UIDeviceOrientation.UIDeviceOrientationPortrait:
-				return enums.DeviceOrientation.portrait;
+				return Enums.DeviceOrientation.portrait;
 			default:
 				// Since we have a up/Down orientation, we need to see what the statusbar is set to to get the actual current device orientation
 				var appOrientation = UIApplication.sharedApplication.statusBarOrientation;
-				if (appOrientation === 1 || appOrientation === 2) { return enums.DeviceOrientation.portrait; }
-				else { return enums.DeviceOrientation.landscape; }
+				if (appOrientation === 1 || appOrientation === 2) { return Enums.DeviceOrientation.portrait; }
+				else { return Enums.DeviceOrientation.landscape; }
 		}
 	};
 
@@ -234,14 +226,14 @@ if (global.android) {
     };
 
 	var resetLandscapedLock = false;
-	application.on('suspend', function() {
+	Application.on('suspend', function() {
 		if (allowRotation === false && orientation.getOrientation() === 'landscape') {
 			allowRotation = true;
 			resetLandscapedLock = true;
 		}
 	});
 
-	application.on('resume', function() {
+	Application.on('resume', function() {
 		if (resetLandscapedLock) {
 			resetLandscapedLock = false;
 			orientation.setOrientation('landscape',false);
@@ -252,7 +244,9 @@ if (global.android) {
 }
 
 // Depreciated; but supported for backwards compatibility
-application.getOrientation = orientation.getOrientation;
+Application.getOrientation = orientation.getOrientation;
+
+export default orientation
 
 /**
  * Searchs for a prototype in the prototype chain
@@ -272,7 +266,7 @@ function findRootPrototype(source, name) {
  * Sets up the iOS Controller configuration
  */
 function setupiOSController() {
-	var curFrame = frame.topmost();
+	var curFrame = Frame.topmost();
 	if (!curFrame) {
 		setTimeout(setupiOSController, 100);
 		return;
@@ -321,7 +315,7 @@ var applyOrientationToPage = function(page, args){
 	if (!currentOrientation) return;
 
 	// Check what the current rotation vs the existing page rotation is
-	var isLandscape = currentOrientation === enums.DeviceOrientation.landscape;
+	var isLandscape = currentOrientation === Enums.DeviceOrientation.landscape;
 	if (!args || !args.force) {
 		var containsLandScape = page.classList.contains("landscape");
 
@@ -365,12 +359,7 @@ var applyOrientationToPage = function(page, args){
     }
 
 	if (args != null) {
-		if (view.eachDescendant) {
-			view.eachDescendant(page, resetChildrenRefreshes);
-		} else {
-			// TNS 6.8+ rc
-			viewBase.eachDescendant(page, resetChildrenRefreshes);
-		}
+		eachDescendant(page, resetChildrenRefreshes);
 	}
 	if (page.exports && typeof page.exports.orientation === "function") {
 		page.exports.orientation({landscape: isLandscape, object: page});
@@ -385,8 +374,8 @@ var applyOrientationToPage = function(page, args){
  */
 var handleOrientationChange = function(args) {
 	// If the topmost frame doesn't exist we can't do anything...
-	if (!frame.topmost()) { return; }
-	var currentPage = frame.topmost().currentPage;
+	if (!Frame.topmost()) { return; }
+	var currentPage = Frame.topmost().currentPage;
 
 	if (currentPage) {
 		applyOrientationToPage(currentPage, args);
@@ -427,5 +416,5 @@ function iosProperty(theClass, theProperty) {
 
 // Setup Events
 Page.on(Page.navigatingToEvent, handleNavigatingTo);
-application.on(application.orientationChangedEvent, handleOrientationChange);
+Application.on(Application.orientationChangedEvent, handleOrientationChange);
 

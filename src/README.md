@@ -36,10 +36,28 @@ Thanks to TJ VanToll for the awesome animated gif.
  
 
 ## Installation 
+#### Nativescript 7.x.x
 tns plugin add nativescript-orientation  
+
+#### NativeScript 3.x.x - 6.x.x
+tns plugin add nativescript-orientation@2.2.5
 
 #### NativeScript 2.x.x
 tns plugin add nativescript-orientation@1.6.1
+
+## Migration to 3.0 for Nativescript 7 support and es2017 :)
+
+Replace all:
+
+```js
+var orientation = require( "nativescript-orientation" );
+```
+
+with:
+
+```js
+import orientation from "nativescript-orientation";
+```
 
 ## Usage
 
@@ -120,17 +138,16 @@ This event is called on every screen navigation and any time the device rotates;
    
 
 
-### Additional Helper Method
+### Additional Helper Methods
 
-```js 
-var orientation = require('nativescript-orientation');
-``` 
+```js
+import orientation from "nativescript-orientation";
+```
 
 #### orientation.getOrientation(sensors?)
 ##### optional sensor === true, will return you sensor values on android verses screen size calculation
 ##### Some android tablets lie about port vs landscape; so we determine the orientation based on the current screen sizes
 ```js
-  var orientation = require('nativescript-orientation');
   console.log(orientation.getOrientation());  // Returns the enum DeviceOrientation value
 ```
  
@@ -139,7 +156,6 @@ var orientation = require('nativescript-orientation');
 ##### Animation === false, disabled animation on iOS.  (iOS ONLY currently)
 This will automatically disable rotation support after it changes the orientation.
 ```js
-  var orientation = require('nativescript-orientation');
   orientation.setOrientation("landscape");  
 ```
   
@@ -147,7 +163,6 @@ This will automatically disable rotation support after it changes the orientatio
 #### orientation.enableRotation() - enable orientation
 This will enable automatic orientation support
 ```js
-  var orientation = require('nativescript-orientation');
   orientation.enableRotation();  // The screen will rotate to whatever the current settings are...
 ```
 
@@ -155,7 +170,6 @@ This will enable automatic orientation support
 #### orientation.disableRotation() - disables orientation
 This will disable automatic orientation support and lock it to the current orientation
 ```js
-  var orientation = require('nativescript-orientation');
   orientation.disableRotation(); // The screen will no longer rotate 
 ```
 
